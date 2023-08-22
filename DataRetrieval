@@ -1,0 +1,43 @@
+-- All products: Sales volume vs item price
+
+SELECT
+  item.item_id,
+  item.item_name,
+  item.price_in_usd,
+  SUM(item.quantity) AS total_sold_quantity,
+FROM
+  `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`,
+  UNNEST(items) AS item
+WHERE
+  event_name = 'purchase'
+GROUP BY
+  1,
+  2,
+  3
+ORDER BY
+  total_sold_quantity DESC
+
+
+-- Sales and revenue data for all products 
+
+SELECT
+  item.item_id,
+  item.item_name,
+  event_date,
+  event_timestamp,
+  item.price_in_usd,
+  item.item_revenue_in_usd,
+  item.item_category,
+  SUM(item.quantity) AS sold_quantity_on_that_date
+FROM
+  `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`,
+  UNNEST(items) AS item
+WHERE
+  event_name = 'purchase'
+  AND item.item_id IN ('9188203', '9180819', '9180865', '9188201', '9195032')
+GROUP BY
+  1, 2, 3, 4, 5, 6, 7
+ORDER BY
+  item.item_category, event_date DESC, event_timestamp DESC;
+
+
